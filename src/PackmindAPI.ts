@@ -1,0 +1,61 @@
+import {PackmindConfig} from "./PackmindConfig.js";
+import {getBaseUrl} from "./APIKey.js";
+import {Space} from "./model/Space.js";
+import {axiosHttpRequest} from "./HttpUtils.js";
+
+export class PackmindAPI {
+
+    protected packmindURL: string;
+    protected packmindApiKey: string;
+
+    constructor(config: PackmindConfig) {
+        // @ts-ignore
+        this.packmindApiKey = config.getPackmindApiKey();
+        this.packmindURL = getBaseUrl(this.packmindApiKey);
+    }
+
+    async getSpaces(): Promise<Space[]>{
+        const url = this.packmindURL + '/api/plugin/common/space';
+        const httpConfig = {
+            method: 'get',
+            url,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'promyze-api-key': this.packmindApiKey,
+            },
+        };
+
+        const response = await axiosHttpRequest(httpConfig);
+
+        return response.data.map((result: any) => {
+            return new Space(result._id, result.name);
+        });
+    }
+
+    async initMcpImport(spaceId: string, text: string, extension: string): Promise<void> {
+        const formattedPayload = JSON.stringify({
+            spaceId,
+            text,
+            extension,
+        });
+
+        console.log(formattedPayload);
+
+        const httpConfig = {
+            method: 'post',
+            url: this.packmindURL + '/api/plugin/common/mcp/init/text',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'promyze-api-key': this.packmindApiKey,
+                'promyze-source-type': 'MCP',
+                'promyze-source-provider': 'MCP',
+            },
+            data: formattedPayload,
+        };
+
+        await axiosHttpRequest(httpConfig);
+    }
+
+}
