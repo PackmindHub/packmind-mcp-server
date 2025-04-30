@@ -61,60 +61,21 @@ mcpServer.tool(
 
 mcpServer.tool(
   "get-coding-practice-description",
-  "Get coding practice description from Packmind based on its name",
+  `Get coding practice description from Packmind based on its name and its space. If the information comes from packmind-cli, an example of output:" +
+     "Line 68: Two identical method calls shoud not happen in the same method (TS) (Space: Packmind)"
+      Must generate
+      * practiceName: 'Two identical method calls shoud not happen in the same method (TS)'
+      * spaceName: 'Packmind'`,
   {
     practiceName: z.string().min(1).describe("Name of the practice"),
+    spaceName: z.string().min(1).describe("Name of the space"),
   },
-  async ({ practiceName }) => {
+  async ({ practiceName, spaceName }) => {
     if (!packmind) {
       throw new Error("PackmindLogic not initialized. Call initializePackmind() before using this tool.");
     }
     
-    // Get grid point data
-    console.log("Fetching practice description for", practiceName);
-    const practiceDescription = `
-Include full error object in error handling payload
-
-### What
-This practice is triggered when handling errors in the code, specifically when creating error payloads for dispatch actions.
-
-### Why
-Using the full error object instead of just the error message in payloads provides more context and information for debugging, making it easier to identify and fix issues.
-
-### Fix
-Modify the code to pass the entire error object rather than just the message when setting error payloads for dispatch actions.
-
-### Good example
-\`\`\`
-try {
-    dispatch({
-        type: 'CREATE_DISCOVERY_WORKSHOP_FROM_STORE_DATA_SUCCEEDED',
-    });
-    dispatch(deleteDiscoveryWorkshopFromCache(id));
-} catch (error) {
-    dispatch({
-        type: 'CREATE_DISCOVERY_WORKSHOP_FROM_STORE_DATA_FAILED',
-        payload: error,
-    });
-}
-\`\`\`
-
-### Bad example
-\`\`\`
-try {
-    dispatch({
-        type: 'CREATE_DISCOVERY_WORKSHOP_FROM_STORE_DATA_SUCCEEDED',
-    });
-    dispatch(deleteDiscoveryWorkshopFromCache(id));
-} catch (error) {
-    dispatch({
-        type: 'CREATE_DISCOVERY_WORKSHOP_FROM_STORE_DATA_FAILED',
-        payload: error.message,
-    });
-}
-\`\`\`
-
-`;
+    const practiceDescription = await packmind.getPracticeDescriptionAndExamples(practiceName, spaceName);
 
     return {
       content: [

@@ -2,6 +2,7 @@ import {PackmindConfig} from "./PackmindConfig.js";
 import {getBaseUrl} from "./APIKey.js";
 import {Space} from "./model/Space.js";
 import {axiosHttpRequest} from "./HttpUtils.js";
+import {PracticeBasicInfo, PracticeWithExample} from "./model/Practice.js";
 
 export class PackmindAPI {
 
@@ -15,7 +16,7 @@ export class PackmindAPI {
     }
 
     async getSpaces(): Promise<Space[]>{
-        const url = this.packmindURL + '/api/plugin/common/space';
+        const url = `${this.packmindURL}/api/plugin/common/space`;
         const httpConfig = {
             method: 'get',
             url,
@@ -33,6 +34,39 @@ export class PackmindAPI {
         });
     }
 
+    async getPracticesInSpace(spaceId: string): Promise<PracticeBasicInfo[]> {
+        const url = `${this.packmindURL}/api/plugin/common/craft-tag-reference/in-space/${spaceId}`;
+        const httpConfig = {
+            method: 'get',
+            url,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'promyze-api-key': this.packmindApiKey,
+            },
+        };
+
+        const response = await axiosHttpRequest(httpConfig);
+        return response.data;
+    }
+
+    async getPracticeWithExamples(spaceId: string, practiceId: string): Promise<PracticeWithExample> {
+        const url = `${this.packmindURL}/api/plugin/common/craft-tag-reference/${spaceId}/${practiceId}`;
+        const httpConfig = {
+            method: 'get',
+            url,
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'promyze-api-key': this.packmindApiKey,
+            },
+        };
+
+        const response = await axiosHttpRequest(httpConfig);
+        return response.data;
+    }
+
+
     async initMcpImport(spaceId: string, text: string, extension: string): Promise<void> {
         const formattedPayload = JSON.stringify({
             spaceId,
@@ -44,7 +78,7 @@ export class PackmindAPI {
 
         const httpConfig = {
             method: 'post',
-            url: this.packmindURL + '/api/plugin/common/mcp/init/text',
+            url: `${this.packmindURL}/api/plugin/common/mcp/init/text`,
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
