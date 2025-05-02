@@ -61,10 +61,10 @@ mcpServer.tool(
 
 mcpServer.tool(
   'get-coding-practice-description',
-  `Get coding practice description from Packmind based on its name and its space. If the information comes from packmind-cli, an example of output:" +
-     "Line 68: Two identical method calls shoud not happen in the same method (TS) (Space: Packmind)"
+  `Get coding practice description from Packmind based on its name and its space. If the information comes from packmind-cli, an example of output:"
+     "Line 68: Two identical method calls should not happen in the same method (TS) (Space: Packmind)"
       Must generate
-      * practiceName: 'Two identical method calls shoud not happen in the same method (TS)'
+      * practiceName: 'Two identical method calls should not happen in the same method (TS)'
       * spaceName: 'Packmind'`,
   {
     practiceName: z.string().min(1).describe('Name of the practice'),

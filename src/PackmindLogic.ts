@@ -92,7 +92,7 @@ export class PackmindLogic {
   }
 
   private normalizeSpaceName(spaceName: string): string {
-    return spaceName.toLowerCase().replace(/ /g, '-');
+    return spaceName.toLowerCase().replace(/-/g, '').replace(/ /g, '');
   }
 
   async initMcpImport(targetSpace: Space, practice: string, extension: string): Promise<void> {

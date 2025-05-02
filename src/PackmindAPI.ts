@@ -29,8 +29,11 @@ export class PackmindAPI {
 
     const response = await axiosHttpRequest(httpConfig);
 
-    return response.data.map((result: any) => {
-      return new Space(result._id, result.name);
+    return response.data.map((result: any): Space => {
+      return {
+        id: result._id,
+        name: result.name
+      };
     });
   }
 
