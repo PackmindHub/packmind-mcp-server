@@ -43,7 +43,7 @@ mcpServer.tool(
     const targetSpace = await packmind.getActualSpace(space);
     if (!targetSpace) {
       const spaces = await packmind.getSpaces();
-      throw new Error(`Invalid space: ${space}. Ask for one of these values before retrying: ${spaces.join(', ')}`);
+      throw new Error(`Invalid space: ${space}. Ask for one of these values before retrying: ${spaces.map((s) => s.name).join(', ')}`);
     }
 
     await packmind.initMcpImport(targetSpace, practice, extension);
