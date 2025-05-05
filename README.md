@@ -23,7 +23,7 @@ Add a new block `packmind`
           "env": {
             "PACKMIND_API_KEY": "YOUR_API_KEY"
           }
-      },
+      }
   }
 }
 ```
