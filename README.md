@@ -5,11 +5,13 @@
 2. Run the following command 
 
 ```
+npm install
 npm run build
 ``` 
 
 3. In Cursor, go to "Settings -> MCP -> Add a new global MCP server"
 
+```json
 Add a new block `packmind`
 {
   "mcpServers": {
@@ -24,3 +26,4 @@ Add a new block `packmind`
       },
   }
 }
+```
