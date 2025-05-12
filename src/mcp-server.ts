@@ -40,12 +40,17 @@ mcpServer.tool(
       throw new Error('PackmindLogic not initialized. Call initializePackmind() before using this tool.');
     }
 
-    const targetSpace = await packmind.getActualSpace(space);
+    let targetSpace = await packmind.getActualSpace(space);
     if (!targetSpace) {
       const spaces = await packmind.getSpaces();
-      throw new Error(`Invalid space: ${space}. Ask for one of these values before retrying: ${spaces.map((s) => s.name).join(', ')}`);
+      if (!spaces.length) {
+        throw new Error(`User do not have any space in Packmind. Stop here.}`);
+      }
+      if (spaces.length > 1) {
+        throw new Error(`Invalid space: ${space}. Ask for one of these values before retrying: ${spaces.map((s) => s.name).join(', ')}`);
+      }
+      targetSpace = spaces[0];
     }
-
     await packmind.initMcpImport(targetSpace, practice, extension);
 
     return {
