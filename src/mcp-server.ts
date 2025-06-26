@@ -1,12 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import {PackmindConfig} from './PackmindConfig.js';
-import {PackmindAPI} from './PackmindAPI.js';
-import {PackmindLogic} from './PackmindLogic.js';
+import {ProtomindAPI} from './ProtomindAPI.js';
+import {ProtomindLogic} from './ProtomindLogic.js';
 
 // Create server instance
 const mcpServer = new McpServer({
-  name: 'packmind',
+  name: 'protomind',
   version: '1.0.0',
   capabilities: {
     resources: {},
@@ -15,78 +14,35 @@ const mcpServer = new McpServer({
 });
 
 // This will store our PackmindLogic instance once initialized
-let packmind: PackmindLogic;
+let protomind: ProtomindLogic;
 
 // Initialize Packmind components
-export function initializePackmind() {
+export function initializePackmind(): ProtomindLogic {
   // Create Packmind API instance
-  const config = new PackmindConfig();
-  config.checkIsValid();
-  const packmindAPI = new PackmindAPI(config);
-  packmind = new PackmindLogic(packmindAPI);
-  return { config, packmindAPI, packmind };
+  const protomindAPI = new ProtomindAPI('http://localhost:3001');
+  protomind = new ProtomindLogic(protomindAPI);
+  return protomind;
 }
 
 mcpServer.tool(
-  'create-coding-practice',
-  'Create a new coding practice in Packmind',
+  'create-how-to-prompt',
+  'Create and save a How-To Prompt in Markdown format in Protomind to be used by other developers with AI coding assistants agents tools',
   {
-    practice: z.string().min(1).describe('Details of the practice including its name, description, a bad example and a good example'),
-    space: z.string().min(1).describe('The target Packmind space where the practice will be created'),
-    extension: z.string().min(1).describe('The programming language (mandatory) and framework (optional) targeted by the practice. Ex: \'Java Spring\', \'React TSX\', \'Python\''),
+    howToName: z.string().min(1).describe('A short name for the How-To Prompt. Ex: "Add a new controller in the backend"'),
+    howToBody: z.string().min(1).describe('The how-to content in Markdown, summarizing the steps to follow to accomplish the how-to. Should be generic to be used by other developers in different contexts.'),
   },
-  async ({ practice, space, extension }) => {
-    if (!packmind) {
+  async ({ howToName, howToBody }) => {
+    if (!protomind) {
       throw new Error('PackmindLogic not initialized. Call initializePackmind() before using this tool.');
     }
 
-    let targetSpace = await packmind.getActualSpace(space);
-    if (!targetSpace) {
-      const spaces = await packmind.getSpaces();
-      if (!spaces.length) {
-        throw new Error(`User do not have any space in Packmind. Stop here.}`);
-      }
-      if (spaces.length > 1) {
-        throw new Error(`Invalid space: ${space}. Ask for one of these values before retrying: ${spaces.map((s) => s.name).join(', ')}`);
-      }
-      targetSpace = spaces[0];
-    }
-    await packmind.initMcpImport(targetSpace, practice, extension);
+    await protomind.initMcpImport(howToName, howToBody);
 
     return {
       content: [
         {
           type: 'text',
-          text: `Success! Practice will be available in a few seconds in the space ${targetSpace.name}`,
-        },
-      ],
-    };
-  }
-);
-
-mcpServer.tool(
-  'get-coding-practice-description',
-  `Get coding practice description from Packmind based on its name and its space. If the information comes from packmind-cli, an example of output:"
-     "Line 68: Two identical method calls should not happen in the same method (TS) (Space: Packmind)"
-      Must generate
-      * practiceName: 'Two identical method calls should not happen in the same method (TS)'
-      * spaceName: 'Packmind'`,
-  {
-    practiceName: z.string().min(1).describe('Name of the practice'),
-    spaceName: z.string().min(1).describe('Name of the space'),
-  },
-  async ({ practiceName, spaceName }) => {
-    if (!packmind) {
-      throw new Error('PackmindLogic not initialized. Call initializePackmind() before using this tool.');
-    }
-    
-    const practiceDescription = await packmind.getPracticeDescriptionAndExamples(practiceName, spaceName);
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: practiceDescription,
+          text: `Success! How To '${howToName}' has been created and saved in Protomind.`,
         },
       ],
     };
