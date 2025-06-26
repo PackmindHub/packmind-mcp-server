@@ -7,19 +7,16 @@ npm run build
 ```
 # Github Copilot (VSCode)
 3. Create a .vscode/mcp.json file
-Add a new block `packmind`
+Add a new block `protomind`
 ```json
 {
   "servers": {
-      "packmind": {
+      "protomind": {
           "command": "node",
           "args": [
-              "<PATH_TO_YOUR_HOME>/packmind-mcp-server/build/index.js"
-          ],
-          "env": {
-              "PACKMIND_API_KEY": "YOUR_API_KEY"
-          }
-      },
+              "<PATH_TO_YOUR_HOME>/mcp-server/build/index.js"
+          ]
+      }
   }
 }
 ```
